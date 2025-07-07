@@ -29,8 +29,8 @@ export function LearningHub() {
 
   return (
     <div className="space-y-8">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-white mb-2">Learning Hub</h1>
+      <div className="space-y-2">
+        <h1 className="text-4xl font-bold text-white">Learning Hub</h1>
         <p className="text-white/70">Everything you need to know about clean mobility</p>
       </div>
 

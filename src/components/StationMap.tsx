@@ -8,22 +8,94 @@ export function StationMap() {
     city: "",
     status: "operational",
   });
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
 
   const stations = useQuery(api.stations.list, filters);
 
-  if (stations === undefined) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-      </div>
-    );
-  }
+  // Show cached data immediately, don't show loading spinner
+  const displayStations = stations || [];
+
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
+    }
+  };
+
+  const calculateDistance = (station: any) => {
+    if (!userLocation) return null;
+    
+    const R = 6371; // Earth's radius in km
+    const dLat = (station.location.coordinates.lat - userLocation.lat) * Math.PI / 180;
+    const dLon = (station.location.coordinates.lng - userLocation.lng) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(userLocation.lat * Math.PI / 180) * Math.cos(station.location.coordinates.lat * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; // Distance in km
+  };
+
+  const nearestStations = userLocation 
+    ? displayStations
+        .map(station => ({
+          ...station,
+          distance: calculateDistance(station)
+        }))
+        .filter(station => station.distance !== null)
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, 5)
+    : [];
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-white mb-2">Station Locator</h1>
+      <div className="space-y-2">
+        <h1 className="text-4xl font-bold text-white">Station Locator</h1>
         <p className="text-white/70">Find CNG and EV charging stations with real-time availability</p>
+      </div>
+
+      {/* Find Nearest Stations */}
+      <div className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 backdrop-blur-md rounded-xl p-6 border border-blue-500/30">
+        <div className="flex justify-between items-center">
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-2">Find Nearest Stations</h3>
+            <p className="text-white/70">Locate the closest CNG/EV stations to your current location</p>
+          </div>
+          <button
+            onClick={getCurrentLocation}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors"
+          >
+            📍 Find Nearest
+          </button>
+        </div>
+        
+        {nearestStations.length > 0 && (
+          <div className="mt-6">
+            <h4 className="text-white font-medium mb-3">Nearest Stations:</h4>
+            <div className="grid gap-3">
+              {nearestStations.map((station) => (
+                <div key={station._id} className="bg-white/10 rounded-lg p-4 flex justify-between items-center">
+                  <div>
+                    <span className="text-white font-medium">{station.name}</span>
+                    <p className="text-white/60 text-sm">{station.location.address}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-green-300 font-medium">{station.distance?.toFixed(1)} km</span>
+                    <p className="text-white/60 text-sm">{station.type}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Filters */}
@@ -79,9 +151,9 @@ export function StationMap() {
         </div>
       </div>
 
-      {/* Stations List */}
+      {/* Stations List - Discovery Only */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {stations.map((station) => (
+        {displayStations.map((station) => (
           <div key={station._id} className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-xl font-semibold text-white">{station.name}</h3>
@@ -162,7 +234,7 @@ export function StationMap() {
         ))}
       </div>
 
-      {stations.length === 0 && (
+      {displayStations.length === 0 && (
         <div className="text-center py-12">
           <p className="text-white/70">No stations found matching your criteria.</p>
         </div>

@@ -8,20 +8,13 @@ export function Dashboard() {
   const stations = useQuery(api.stations.list, { status: "operational" });
   const seedDatabase = useMutation(api.sampleData.seedDatabase);
 
-  if (!user || bookings === undefined || providers === undefined || stations === undefined) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-      </div>
-    );
-  }
-
-  const recentBookings = bookings.slice(0, 3);
+  // Show cached/existing data immediately, don't show loading spinner
+  const recentBookings = (bookings || []).slice(0, 3);
   const stats = [
-    { label: "Verified Providers", value: providers.length, icon: "🔧" },
-    { label: "Active Stations", value: stations.length, icon: "⛽" },
-    { label: "Your Bookings", value: bookings.length, icon: "📅" },
-    { label: "Completed", value: bookings.filter(b => b.status === "completed").length, icon: "✅" },
+    { label: "Verified Providers", value: (providers || []).length, icon: "🔧" },
+    { label: "Active Stations", value: (stations || []).length, icon: "⛽" },
+    { label: "Your Bookings", value: (bookings || []).length, icon: "📅" },
+    { label: "Completed", value: (bookings || []).filter(b => b.status === "completed").length, icon: "✅" },
   ];
 
   return (
@@ -96,7 +89,7 @@ export function Dashboard() {
       </div>
 
       {/* Seed Database Button (for demo purposes) */}
-      {providers?.length === 0 && (
+      {(providers || []).length === 0 && (
         <div className="bg-yellow-500/20 backdrop-blur-md rounded-xl p-6 border border-yellow-500/30 text-center">
           <h3 className="text-xl font-semibold text-white mb-2">Demo Data</h3>
           <p className="text-white/70 mb-4">Load sample providers, stations, and articles to explore the platform</p>

@@ -11,19 +11,14 @@ export function ProviderDirectory() {
 
   const providers = useQuery(api.providers.list, filters);
 
-  if (providers === undefined) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-      </div>
-    );
-  }
+  // Show cached data immediately, don't show loading spinner
+  const displayProviders = providers || [];
 
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-white mb-2">Verified Providers</h1>
-        <p className="text-white/70">Find trusted conversion specialists near you</p>
+        <h1 className="text-4xl font-bold text-white mb-2">Find Providers</h1>
+        <p className="text-white/70">Discover verified conversion service providers near you</p>
       </div>
 
       {/* Filters */}
@@ -66,9 +61,9 @@ export function ProviderDirectory() {
         </div>
       </div>
 
-      {/* Providers Grid */}
+      {/* Provider Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {providers.map((provider) => (
+        {displayProviders.map((provider) => (
           <div key={provider._id} className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all">
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-xl font-semibold text-white">{provider.name}</h3>
@@ -120,7 +115,7 @@ export function ProviderDirectory() {
         ))}
       </div>
 
-      {providers.length === 0 && (
+      {displayProviders.length === 0 && (
         <div className="text-center py-12">
           <p className="text-white/70">No providers found matching your criteria.</p>
         </div>

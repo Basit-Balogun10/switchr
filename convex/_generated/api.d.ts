@@ -24,6 +24,7 @@ import type * as reviews from "../reviews.js";
 import type * as router from "../router.js";
 import type * as sampleData from "../sampleData.js";
 import type * as stations from "../stations.js";
+import type * as users from "../users.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -45,6 +46,7 @@ declare const fullApi: ApiFromModules<{
   router: typeof router;
   sampleData: typeof sampleData;
   stations: typeof stations;
+  users: typeof users;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

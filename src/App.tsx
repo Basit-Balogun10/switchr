@@ -1,11 +1,12 @@
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { api } from "../convex/_generated/api";
 import { AuthForm } from "./components/AuthForm";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Sidebar } from "./components/layout/Sidebar";
 import { useUserRole } from "./hooks/useUserRole";
 import { Toaster } from "sonner";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Dashboard } from "./components/Dashboard";
 import { ProviderDirectory } from "./components/ProviderDirectory";
 import { StationMap } from "./components/StationMap";
@@ -15,7 +16,6 @@ import { BookingSystem } from "./components/BookingSystem";
 import { LearningHub } from "./components/LearningHub";
 import { ProviderOnboarding } from "./components/ProviderOnboarding";
 import { ProviderDashboard } from "./components/ProviderDashboard";
-import { StationOwnerDashboard } from "./components/StationOwnerDashboard";
 import { TrustSafety } from "./components/TrustSafety";
 
 export default function App() {
@@ -31,22 +31,14 @@ export default function App() {
 }
 
 function Content() {
-  const user = useQuery(api.auth.loggedInUser);
+  const user = useQuery(api.auth.getCurrentUser);
   const userRole = useUserRole();
   const { signOut } = useAuthActions();
-  const [activeTab, setActiveTab] = useState("");
   const [showAuthForm, setShowAuthForm] = useState(false);
+  const location = useLocation();
 
-  // Set default route based on user role
-  useEffect(() => {
-    if (userRole && !activeTab) {
-      setActiveTab(userRole.defaultRoute);
-    }
-  }, [userRole, activeTab]);
-
-  const handleSignOut = () => {
-    signOut();
-    setActiveTab("");
+  const handleSignOut = async () => {
+    await signOut();
   };
 
   if (user === undefined) {
@@ -125,51 +117,61 @@ function Content() {
 
       <Authenticated>
         <div className="flex h-screen">
-          {/* Debug info - remove after fixing */}
-          <div className="fixed top-0 right-0 z-50 bg-black/80 text-white p-2 text-xs">
-            <div>User: {user ? 'Found' : 'None'}</div>
-            <div>UserRole: {userRole ? userRole.type : 'None'}</div>
-            <div>ActiveTab: {activeTab}</div>
-          </div>
-
           {/* Sidebar */}
           {user && userRole && (
             <Sidebar
               userRole={userRole.type}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
               user={{
-                fullName: user.fullName,
-                email: user.email,
+                fullName: user.fullName || "",
+                email: user.email || "",
                 profileImage: user.profileImage,
               }}
               onSignOut={handleSignOut}
             />
           )}
 
-          {/* Main Content */}
-          <div className={`flex-1 overflow-auto ${userRole ? 'lg:ml-72' : ''}`}>
+          {/* Main Content - Adjusted for sidebar */}
+          <div className="flex-1 overflow-auto ml-0 lg:ml-72 transition-all duration-300">
             <div className="p-4 lg:p-8 pt-16 lg:pt-8">
-              {/* Content based on active tab and user role */}
-              {activeTab === "dashboard" && <Dashboard />}
-              {activeTab === "provider-dash" && <ProviderDashboard />}
-              {activeTab === "station-dash" && <StationOwnerDashboard />}
-              {activeTab === "providers" && <ProviderDirectory />}
-              {activeTab === "stations" && <StationMap />}
-              {activeTab === "checker" && <VehicleChecker />}
-              {activeTab === "calculator" && <CostCalculator />}
-              {activeTab === "booking" && <BookingSystem />}
-              {activeTab === "learning" && <LearningHub />}
-              {activeTab === "trust-safety" && <TrustSafety />}
-              {activeTab === "provider-onboard" && <ProviderOnboarding />}
-              
-              {/* Fallback content */}
-              {!activeTab && (
-                <div className="text-center py-12">
-                  <h2 className="text-2xl font-semibold text-white mb-4">Welcome to Switchr!</h2>
-                  <p className="text-white/70">Select an option from the sidebar to get started.</p>
-                </div>
-              )}
+              <Routes>
+                {/* User Routes */}
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/vehicle-checker" element={<VehicleChecker />} />
+                <Route path="/providers" element={<ProviderDirectory />} />
+                <Route path="/stations" element={<StationMap />} />
+                <Route path="/bookings" element={<BookingSystem />} />
+                <Route path="/learning" element={<LearningHub />} />
+                <Route path="/documents" element={<TrustSafety />} />
+                <Route path="/calculator" element={<CostCalculator />} />
+
+                {/* Provider Routes */}
+                <Route path="/provider-dashboard" element={<ProviderDashboard />} />
+                <Route path="/manage-bookings" element={<ProviderDashboard />} />
+                <Route path="/customers" element={<div className="text-white">Customers Page - Coming Soon</div>} />
+                <Route path="/analytics" element={<div className="text-white">Analytics Page - Coming Soon</div>} />
+                <Route path="/checklists" element={<TrustSafety />} />
+                <Route path="/provider-onboard" element={<ProviderOnboarding />} />
+
+                {/* Admin Routes */}
+                <Route path="/admin-dashboard" element={<div className="text-white">Admin Dashboard - Coming Soon</div>} />
+                <Route path="/admin/providers" element={<ProviderDirectory />} />
+                <Route path="/admin/stations" element={<StationMap />} />
+                <Route path="/admin/users" element={<div className="text-white">User Management - Coming Soon</div>} />
+                <Route path="/admin/analytics" element={<div className="text-white">Platform Analytics - Coming Soon</div>} />
+
+                {/* Default redirect based on user role */}
+                <Route path="/" element={
+                  <Navigate to={userRole?.defaultRoute || "/dashboard"} replace />
+                } />
+                
+                {/* Fallback for unknown routes */}
+                <Route path="*" element={
+                  <div className="text-center py-12">
+                    <h2 className="text-2xl font-semibold text-white mb-4">Page Not Found</h2>
+                    <p className="text-white/70">The page you're looking for doesn't exist.</p>
+                  </div>
+                } />
+              </Routes>
             </div>
           </div>
         </div>
