@@ -5,24 +5,27 @@ import { authTables } from "@convex-dev/auth/server";
 const applicationTables = {
     // Enhanced users table with user types
     users: defineTable({
-        email: v.optional(v.string()),
-        fullName: v.optional(v.string()),
-        userType: v.optional(v.union(
+        email: v.string(),
+        // For users: fullName, for providers: companyName
+        fullName: v.optional(v.string()), // Vehicle owners
+        companyName: v.optional(v.string()), // Service providers
+        officeAddress: v.optional(v.string()), // Service providers only
+        userType: v.union(
             v.literal("user"),
-            v.literal("provider"),
+            v.literal("provider"), 
             v.literal("admin")
-        )),
+        ),
         profileImage: v.optional(v.id("_storage")),
         phone: v.optional(v.string()),
-        isVerified: v.optional(v.boolean()),
-        isEmailVerified: v.optional(v.boolean()),
-        preferences: v.optional(
-            v.object({
-                notifications: v.boolean(),
-                newsletter: v.boolean(),
-                language: v.string(),
-            })
-        ),
+        isVerified: v.boolean(),
+        isEmailVerified: v.boolean(),
+        createdAt: v.number(),
+        lastLoginAt: v.optional(v.number()),
+        preferences: v.optional(v.object({
+            notifications: v.boolean(),
+            newsletter: v.boolean(),
+            language: v.string(),
+        })),
     })
         .index("by_email", ["email"])
         .index("by_userType", ["userType"])

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { UserType } from "../../lib/types";
+import { UserType, getDisplayName, getInitials } from "../../lib/types";
 
 interface NavigationItem {
   id: string;
@@ -14,9 +14,11 @@ interface NavigationItem {
 interface SidebarProps {
   userRole: UserType;
   user: {
-    fullName: string;
+    fullName?: string;
+    companyName?: string;
     email: string;
     profileImage?: string;
+    userType: UserType;
   };
   onSignOut: () => void;
 }
@@ -190,19 +192,13 @@ export function Sidebar({ userRole, user, onSignOut }: SidebarProps) {
           >
             <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-400 rounded-full flex items-center justify-center flex-shrink-0">
               <span className="text-white font-semibold text-sm">
-                {user.fullName
-                  ? user.fullName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase()
-                  : "U"}
+                {getInitials(user)}
               </span>
             </div>
             {!isCollapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-white font-medium text-sm truncate">
-                  {user.fullName || "User"}
+                  {getDisplayName(user)}
                 </p>
                 <p className="text-white/60 text-xs truncate">
                   {user.email}

@@ -9,6 +9,8 @@ export const { auth, signIn, signOut, store } = convexAuth({
         return {
           email: params.email as string,
           name: params.fullName as string,
+          companyName: params.companyName as string,
+          officeAddress: params.officeAddress as string,
           userType: params.userType as "user" | "provider" | "admin",
           phone: params.phone as string,
         };
@@ -18,14 +20,12 @@ export const { auth, signIn, signOut, store } = convexAuth({
   callbacks: {
     async createOrUpdateUser(ctx, args) {
       if (args.existingUserId) {
-        // Update existing user if needed
         return args.existingUserId;
       }
 
-      // Create new user with the profile data
-      return await ctx.db.insert("users", {
+      // Create new user with different fields based on user type
+      const userData: any = {
         email: args.profile.email!,
-        fullName: args.profile.name!,
         userType: args.profile.userType || "user",
         phone: args.profile.phone,
         isVerified: false,
@@ -36,7 +36,17 @@ export const { auth, signIn, signOut, store } = convexAuth({
           newsletter: false,
           language: "en",
         },
-      });
+      };
+
+      // Add specific fields based on user type
+      if (args.profile.userType === "provider") {
+        userData.companyName = args.profile.companyName;
+        userData.officeAddress = args.profile.officeAddress;
+      } else {
+        userData.fullName = args.profile.name;
+      }
+
+      return await ctx.db.insert("users", userData);
     },
   },
 });

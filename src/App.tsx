@@ -5,6 +5,7 @@ import { AuthForm } from "./components/AuthForm";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Sidebar } from "./components/layout/Sidebar";
 import { useUserRole } from "./hooks/useUserRole";
+import { getDisplayName, getInitials } from "./lib/types";
 import { Toaster } from "sonner";
 import { useState } from "react";
 import { Dashboard } from "./components/Dashboard";
@@ -122,9 +123,11 @@ function Content() {
             <Sidebar
               userRole={userRole.type}
               user={{
-                fullName: user.fullName || "",
+                fullName: user.fullName,
+                companyName: user.companyName,
                 email: user.email || "",
                 profileImage: user.profileImage,
+                userType: user.userType || "user",
               }}
               onSignOut={handleSignOut}
             />
