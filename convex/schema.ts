@@ -16,7 +16,6 @@ const applicationTables = {
             v.literal("admin")
         ),
         profileImage: v.optional(v.id("_storage")),
-        phone: v.optional(v.string()),
         isVerified: v.boolean(),
         isEmailVerified: v.boolean(),
         createdAt: v.number(),

@@ -12,7 +12,6 @@ export const { auth, signIn, signOut, store } = convexAuth({
           companyName: params.companyName as string,
           officeAddress: params.officeAddress as string,
           userType: params.userType as "user" | "provider" | "admin",
-          phone: params.phone as string,
         };
       },
     }),
@@ -27,7 +26,6 @@ export const { auth, signIn, signOut, store } = convexAuth({
       const userData: any = {
         email: args.profile.email!,
         userType: args.profile.userType || "user",
-        phone: args.profile.phone,
         isVerified: false,
         isEmailVerified: false,
         createdAt: Date.now(),
