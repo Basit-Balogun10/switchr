@@ -1159,7 +1159,6 @@ export const seedDatabase = mutation({
             const stationOwnerId = await ctx.db.insert("users", {
                 email: `${station.name.toLowerCase().replace(/\s+/g, "")}@energy.ng`,
                 companyName: station.name,
-                officeAddress: station.location.address,
                 userType: "provider",
                 isVerified: true,
                 isEmailVerified: true,

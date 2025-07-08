@@ -6,7 +6,6 @@ export interface User {
     email: string;
     fullName?: string; // For vehicle owners
     companyName?: string; // For service providers
-    officeAddress?: string; // For service providers
     userType: UserType;
     profileImage?: string;
     phone?: string;
