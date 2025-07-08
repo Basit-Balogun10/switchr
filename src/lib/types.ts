@@ -32,7 +32,11 @@ export const getDisplayName = (user: User): string => {
 // Utility function to get initials for avatar
 export const getInitials = (user: User): string => {
     const name = getDisplayName(user);
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+    return name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase();
 };
 
 // User roles and permissions

@@ -1,99 +1,129 @@
-import { query, mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
+export const create = mutation({
+    args: {
+        name: v.string(),
+        description: v.string(),
+        location: v.object({
+            address: v.string(),
+            city: v.string(),
+            state: v.string(),
+            coordinates: v.object({
+                lat: v.number(),
+                lng: v.number(),
+            }),
+        }),
+        services: v.array(v.string()),
+        certifications: v.array(v.string()),
+        pricing: v.object({
+            cngConversion: v.optional(v.number()),
+            evConversion: v.optional(v.number()),
+        }),
+    },
+    handler: async (ctx, args) => {
+        const userId = await getAuthUserId(ctx);
+        if (!userId) {
+            throw new Error("Not authenticated");
+        }
+
+        const user = await ctx.db.get(userId);
+        if (!user || user.userType !== "provider") {
+            throw new Error("Only providers can create provider profiles");
+        }
+
+        const providerId = await ctx.db.insert("providers", {
+            name: args.name,
+            description: args.description,
+            location: args.location,
+            services: args.services,
+            certifications: args.certifications,
+            pricing: args.pricing,
+            images: [],
+            verified: false, // Requires admin approval
+            rating: 0,
+            totalReviews: 0,
+            ownerId: userId,
+        });
+
+        return providerId;
+    },
+});
+
 export const list = query({
-  args: {
-    city: v.optional(v.string()),
-    state: v.optional(v.string()),
-    service: v.optional(v.string()),
-    verified: v.optional(v.boolean()),
-  },
-  handler: async (ctx, args) => {
-    let providers;
+    args: {
+        city: v.optional(v.string()),
+        state: v.optional(v.string()),
+        services: v.optional(v.array(v.string())),
+        verified: v.optional(v.boolean()),
+    },
+    handler: async (ctx, args) => {
+        let providers = ctx.db.query("providers");
 
-    if (args.verified !== undefined) {
-      providers = await ctx.db
-        .query("providers")
-        .withIndex("by_verified", (q) => q.eq("verified", args.verified!))
-        .collect();
-    } else {
-      providers = await ctx.db.query("providers").collect();
-    }
+        if (args.city) {
+            providers = providers.filter((q) =>
+                q.eq(q.field("location.city"), args.city)
+            );
+        }
 
-    return providers
-      .filter((provider) => {
-        if (args.city && provider.location.city !== args.city) return false;
-        if (args.state && provider.location.state !== args.state) return false;
-        if (args.service && !provider.services.includes(args.service)) return false;
-        return true;
-      })
-      .sort((a, b) => b.rating - a.rating);
-  },
+        if (args.state) {
+            providers = providers.filter((q) =>
+                q.eq(q.field("location.state"), args.state)
+            );
+        }
+
+        if (args.verified !== undefined) {
+            providers = providers.filter((q) =>
+                q.eq(q.field("verified"), args.verified)
+            );
+        }
+
+        const results = await providers.collect();
+
+        // Filter by services if provided
+        if (args.services && args.services.length > 0) {
+            return results.filter((provider) =>
+                args.services!.some((service) =>
+                    provider.services.includes(service)
+                )
+            );
+        }
+
+        return results;
+    },
 });
 
 export const getById = query({
-  args: { id: v.id("providers") },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
-  },
+    args: { id: v.id("providers") },
+    handler: async (ctx, args) => {
+        return await ctx.db.get(args.id);
+    },
 });
 
-export const create = mutation({
-  args: {
-    name: v.string(),
-    description: v.string(),
-    location: v.object({
-      address: v.string(),
-      city: v.string(),
-      state: v.string(),
-      coordinates: v.object({
-        lat: v.number(),
-        lng: v.number(),
-      }),
-    }),
-    services: v.array(v.string()),
-    certifications: v.array(v.string()),
-    pricing: v.object({
-      cngConversion: v.optional(v.number()),
-      evConversion: v.optional(v.number()),
-    }),
-  },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Must be logged in to create a provider");
-    }
+export const getByOwner = query({
+    args: {},
+    handler: async (ctx) => {
+        const userId = await getAuthUserId(ctx);
+        if (!userId) return null;
 
-    return await ctx.db.insert("providers", {
-      ...args,
-      images: [],
-      verified: false,
-      rating: 0,
-      totalReviews: 0,
-      ownerId: userId,
-    });
-  },
+        return await ctx.db
+            .query("providers")
+            .filter((q) => q.eq(q.field("ownerId"), userId))
+            .first();
+    },
 });
 
 export const updateRating = mutation({
-  args: {
-    providerId: v.id("providers"),
-    newRating: v.number(),
-  },
-  handler: async (ctx, args) => {
-    const provider = await ctx.db.get(args.providerId);
-    if (!provider) {
-      throw new Error("Provider not found");
-    }
-
-    const totalRating = provider.rating * provider.totalReviews + args.newRating;
-    const newTotalReviews = provider.totalReviews + 1;
-    const newAverageRating = totalRating / newTotalReviews;
-
-    await ctx.db.patch(args.providerId, {
-      rating: newAverageRating,
-      totalReviews: newTotalReviews,
-    });
-  },
+    args: {
+        providerId: v.id("providers"),
+        newRating: v.number(),
+        newTotalReviews: v.number(),
+    },
+    handler: async (ctx, args) => {
+        await ctx.db.patch(args.providerId, {
+            rating: args.newRating,
+            totalReviews: args.newTotalReviews,
+        });
+    },
 });

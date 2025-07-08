@@ -12,7 +12,7 @@ const applicationTables = {
         officeAddress: v.optional(v.string()), // Service providers only
         userType: v.union(
             v.literal("user"),
-            v.literal("provider"), 
+            v.literal("provider"),
             v.literal("admin")
         ),
         profileImage: v.optional(v.id("_storage")),
@@ -20,11 +20,13 @@ const applicationTables = {
         isEmailVerified: v.boolean(),
         createdAt: v.number(),
         lastLoginAt: v.optional(v.number()),
-        preferences: v.optional(v.object({
-            notifications: v.boolean(),
-            newsletter: v.boolean(),
-            language: v.string(),
-        })),
+        preferences: v.optional(
+            v.object({
+                notifications: v.boolean(),
+                newsletter: v.boolean(),
+                language: v.string(),
+            })
+        ),
     })
         .index("by_email", ["email"])
         .index("by_userType", ["userType"])

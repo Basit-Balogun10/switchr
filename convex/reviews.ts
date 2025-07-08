@@ -42,10 +42,20 @@ export const create = mutation({
 
         // Update the target's rating
         if (args.targetType === "provider") {
-            await ctx.runMutation(api.providers.updateRating, {
-                providerId: args.targetId as any,
-                newRating: args.rating,
-            });
+            // Get current provider to calculate new rating
+            const provider = await ctx.db.get(args.targetId as any);
+            if (provider) {
+                const newTotalReviews = provider.totalReviews + 1;
+                const newRating =
+                    ((provider.rating * provider.totalReviews) + args.rating) /
+                    newTotalReviews;
+
+                await ctx.runMutation(api.providers.updateRating, {
+                    providerId: args.targetId as any,
+                    newRating: newRating,
+                    newTotalReviews: newTotalReviews,
+                });
+            }
         }
 
         return reviewId;
