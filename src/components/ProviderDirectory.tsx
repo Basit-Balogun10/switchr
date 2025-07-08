@@ -21,7 +21,7 @@ export function ProviderDirectory() {
         null
     );
 
-    const providers = useQuery(api.providers.list, {
+    const providers = useQuery(api.users.listProviders, {
         city: filters.city || undefined,
         services: filters.services.length > 0 ? filters.services : undefined,
     });

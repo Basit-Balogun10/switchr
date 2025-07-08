@@ -5,15 +5,28 @@ export const seedDatabase = mutation({
     args: {},
     handler: async (ctx) => {
         // Check if data already exists
-        const existingProviders = await ctx.db.query("providers").first();
+        const existingProviders = await ctx.db
+            .query("users")
+            .withIndex("by_userType", (q) => q.eq("userType", "provider"))
+            .first();
         if (existingProviders) {
             return { message: "Database already seeded" };
         }
 
-        // Create sample providers (expanded to 20 entries)
-        const providers = [
+        // Create sample provider users (expanded to 20 entries)
+        const providerData = [
             {
-                name: "GreenTech Auto Solutions",
+                email: "greentechautosolutions@switchr.ng",
+                companyName: "GreenTech Auto Solutions",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Leading CNG conversion specialists with over 10 years of experience. We provide comprehensive conversion services with certified technicians and quality assurance.",
                 location: {
@@ -37,7 +50,17 @@ export const seedDatabase = mutation({
                 totalReviews: 127,
             },
             {
-                name: "EcoMotion Garage",
+                email: "ecomotiongarage@switchr.ng",
+                companyName: "EcoMotion Garage",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Specialized in electric vehicle conversions and hybrid systems. Our team of engineers ensures safe and efficient conversions.",
                 location: {
@@ -56,7 +79,17 @@ export const seedDatabase = mutation({
                 totalReviews: 89,
             },
             {
-                name: "CleanFuel Motors",
+                email: "cleanfuelmotors@switchr.ng",
+                companyName: "CleanFuel Motors",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Affordable CNG conversion services with flexible payment plans. We make clean energy accessible to everyone.",
                 location: {
@@ -75,7 +108,17 @@ export const seedDatabase = mutation({
                 totalReviews: 156,
             },
             {
-                name: "PowerDrive Technologies",
+                email: "powerdrivetechnologies@switchr.ng",
+                companyName: "PowerDrive Technologies",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Premium electric vehicle conversion specialists. We transform your conventional vehicle into a powerful, eco-friendly electric machine.",
                 location: {
@@ -94,7 +137,17 @@ export const seedDatabase = mutation({
                 totalReviews: 73,
             },
             {
-                name: "EnergyMax Conversions",
+                email: "energymaxconversions@switchr.ng",
+                companyName: "EnergyMax Conversions",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Full-service CNG and hybrid conversion center. Quality workmanship with 3-year warranty on all conversions.",
                 location: {
@@ -113,7 +166,17 @@ export const seedDatabase = mutation({
                 totalReviews: 142,
             },
             {
-                name: "Metro Clean Drive",
+                email: "metrocleandrive@switchr.ng",
+                companyName: "Metro Clean Drive",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Urban mobility solutions specializing in compact vehicle conversions. Perfect for city driving and commercial fleets.",
                 location: {
@@ -133,7 +196,17 @@ export const seedDatabase = mutation({
                 totalReviews: 98,
             },
             {
-                name: "TechAuto Solutions",
+                email: "techautosolutions@switchr.ng",
+                companyName: "TechAuto Solutions",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Advanced automotive technology center. Cutting-edge equipment and expert technicians for all conversion types.",
                 location: {
@@ -157,7 +230,17 @@ export const seedDatabase = mutation({
                 totalReviews: 156,
             },
             {
-                name: "GasPlus Auto Center",
+                email: "gasplusautocenter@switchr.ng",
+                companyName: "GasPlus Auto Center",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Nigeria's fastest growing CNG conversion network. Quick turnaround time and competitive pricing.",
                 location: {
@@ -176,7 +259,17 @@ export const seedDatabase = mutation({
                 totalReviews: 87,
             },
             {
-                name: "ElectriVehicle Pro",
+                email: "electrivehiclepro@switchr.ng",
+                companyName: "ElectriVehicle Pro",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Professional electric vehicle conversion and maintenance services. Specializing in Tesla-grade battery systems.",
                 location: {
@@ -195,7 +288,17 @@ export const seedDatabase = mutation({
                 totalReviews: 62,
             },
             {
-                name: "FlexiFuel Systems",
+                email: "flexifuelsystems@switchr.ng",
+                companyName: "FlexiFuel Systems",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Dual-fuel and hybrid vehicle specialists. Convert your car to run on multiple fuel types for maximum flexibility.",
                 location: {
@@ -214,7 +317,17 @@ export const seedDatabase = mutation({
                 totalReviews: 134,
             },
             {
-                name: "CleanMotion Workshop",
+                email: "cleanmotionworkshop@switchr.ng",
+                companyName: "CleanMotion Workshop",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Eco-friendly vehicle conversions with solar charging integration. Sustainable mobility solutions for the future.",
                 location: {
@@ -233,7 +346,17 @@ export const seedDatabase = mutation({
                 totalReviews: 91,
             },
             {
-                name: "AutoGreen Nigeria",
+                email: "autogreenigeria@switchr.ng",
+                companyName: "AutoGreen Nigeria",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Comprehensive green vehicle solutions. From conversion to maintenance, we handle all your clean mobility needs.",
                 location: {
@@ -253,7 +376,17 @@ export const seedDatabase = mutation({
                 totalReviews: 78,
             },
             {
-                name: "MegaDrive Conversions",
+                email: "megadriveconversions@switchr.ng",
+                companyName: "MegaDrive Conversions",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Heavy-duty vehicle conversion specialists. Converting trucks, buses, and commercial vehicles to clean energy.",
                 location: {
@@ -272,7 +405,17 @@ export const seedDatabase = mutation({
                 totalReviews: 112,
             },
             {
-                name: "ElectroMobile Hub",
+                email: "electromobilehub@switchr.ng",
+                companyName: "ElectroMobile Hub",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Modern electric vehicle conversion facility with state-of-the-art equipment and certified technicians.",
                 location: {
@@ -291,7 +434,17 @@ export const seedDatabase = mutation({
                 totalReviews: 59,
             },
             {
-                name: "GreenLine Motors",
+                email: "greenlinemotors@switchr.ng",
+                companyName: "GreenLine Motors",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Budget-friendly CNG conversions without compromising on quality. Flexible payment plans available.",
                 location: {
@@ -310,7 +463,17 @@ export const seedDatabase = mutation({
                 totalReviews: 95,
             },
             {
-                name: "PowerShift Technologies",
+                email: "powershifttechnologies@switchr.ng",
+                companyName: "PowerShift Technologies",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Advanced hybrid and electric vehicle solutions. Smart charging systems and energy management integration.",
                 location: {
@@ -329,7 +492,17 @@ export const seedDatabase = mutation({
                 totalReviews: 83,
             },
             {
-                name: "EcoDrive Workshop",
+                email: "ecodriveworkshop@switchr.ng",
+                companyName: "EcoDrive Workshop",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Community-focused conversion center offering affordable clean vehicle solutions for everyday Nigerians.",
                 location: {
@@ -348,7 +521,17 @@ export const seedDatabase = mutation({
                 totalReviews: 67,
             },
             {
-                name: "VoltDrive Systems",
+                email: "voltdrivesystems@switchr.ng",
+                companyName: "VoltDrive Systems",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Premium electric vehicle conversions with luxury features. High-performance battery systems and smart connectivity.",
                 location: {
@@ -367,7 +550,17 @@ export const seedDatabase = mutation({
                 totalReviews: 41,
             },
             {
-                name: "CleanFuel Express",
+                email: "cleanfuelexpress@switchr.ng",
+                companyName: "CleanFuel Express",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Fast and reliable CNG conversion services. Same-day conversions available for most vehicle types.",
                 location: {
@@ -386,7 +579,17 @@ export const seedDatabase = mutation({
                 totalReviews: 104,
             },
             {
-                name: "SmartMobility Solutions",
+                email: "smartmobilitysolutions@switchr.ng",
+                companyName: "SmartMobility Solutions",
+                userType: "provider" as const,
+                isVerified: true,
+                isEmailVerified: true,
+                createdAt: Date.now(),
+                preferences: {
+                    notifications: true,
+                    newsletter: false,
+                    language: "en",
+                },
                 description:
                     "Integrated mobility solutions combining CNG, EV, and smart vehicle technology for the connected future.",
                 location: {
@@ -946,29 +1149,9 @@ export const seedDatabase = mutation({
             },
         ];
 
-        // Create providers with proper user association
-        for (const provider of providers) {
-            // Create a sample provider user for each provider
-            const providerUserId = await ctx.db.insert("users", {
-                email: `${provider.name.toLowerCase().replace(/\s+/g, "")}@switchr.ng`,
-                companyName: provider.name,
-                officeAddress: provider.location.address,
-                userType: "provider",
-                isVerified: true,
-                isEmailVerified: true,
-                createdAt: Date.now(),
-                preferences: {
-                    notifications: true,
-                    newsletter: false,
-                    language: "en",
-                },
-            });
-
-            await ctx.db.insert("providers", {
-                ...provider,
-                ownerId: providerUserId,
-                verified: true,
-            });
+        // Create provider users
+        for (const provider of providerData) {
+            await ctx.db.insert("users", provider);
         }
 
         // Create stations with proper user association
@@ -992,7 +1175,6 @@ export const seedDatabase = mutation({
             await ctx.db.insert("stations", {
                 ...station,
                 ownerId: stationOwnerId,
-                verified: true,
             });
         }
 
