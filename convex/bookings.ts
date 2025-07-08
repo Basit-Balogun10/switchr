@@ -4,7 +4,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const create = mutation({
   args: {
-    providerId: v.id("providers"),
+    providerId: v.id("users"),
     vehicleInfo: v.object({
       make: v.string(),
       model: v.string(),
@@ -60,16 +60,16 @@ export const getUserBookings = query({
 });
 
 export const getProviderBookings = query({
-  args: { providerId: v.id("providers") },
+  args: { providerId: v.id("users") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw new Error("Must be logged in");
     }
 
-    // Verify the user owns this provider
+    // Verify the user is the provider
     const provider = await ctx.db.get(args.providerId);
-    if (!provider || provider.ownerId !== userId) {
+    if (!provider || provider.userType !== "provider" || args.providerId !== userId) {
       throw new Error("Unauthorized");
     }
 
@@ -97,9 +97,9 @@ export const updateStatus = mutation({
       throw new Error("Booking not found");
     }
 
-    // Verify the user owns the provider for this booking
+    // Verify the user is the provider for this booking
     const provider = await ctx.db.get(booking.providerId);
-    if (!provider || provider.ownerId !== userId) {
+    if (!provider || provider.userType !== "provider" || booking.providerId !== userId) {
       throw new Error("Unauthorized");
     }
 

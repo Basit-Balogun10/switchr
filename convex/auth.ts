@@ -10,8 +10,17 @@ export const { auth, signIn, signOut, store } = convexAuth({
                     email: params.email as string,
                     name: params.fullName as string,
                     companyName: params.companyName as string,
-                    officeAddress: params.officeAddress as string,
                     userType: params.userType as "user" | "provider" | "admin",
+                    // Provider onboarding fields
+                    description: params.description as string,
+                    address: params.address as string,
+                    city: params.city as string,
+                    state: params.state as string,
+                    coordinates: params.coordinates as { lat: number; lng: number } | null,
+                    services: params.services as string[],
+                    certifications: params.certifications as string[],
+                    cngPrice: params.cngPrice as string,
+                    evPrice: params.evPrice as string,
                 };
             },
         }),
@@ -39,7 +48,39 @@ export const { auth, signIn, signOut, store } = convexAuth({
             // Add specific fields based on user type
             if (args.profile.userType === "provider") {
                 userData.companyName = args.profile.companyName;
-                userData.officeAddress = args.profile.officeAddress;
+                
+                // Add provider onboarding fields if provided
+                if (args.profile.description) {
+                    userData.description = args.profile.description;
+                }
+                
+                if (args.profile.address && args.profile.city && args.profile.state) {
+                    userData.location = {
+                        address: args.profile.address,
+                        city: args.profile.city,
+                        state: args.profile.state,
+                        coordinates: args.profile.coordinates || { lat: 0, lng: 0 },
+                    };
+                }
+                
+                if (args.profile.services && Array.isArray(args.profile.services) && args.profile.services.length > 0) {
+                    userData.services = args.profile.services;
+                }
+                
+                if (args.profile.certifications && Array.isArray(args.profile.certifications) && args.profile.certifications.length > 0) {
+                    userData.certifications = args.profile.certifications;
+                }
+                
+                if (args.profile.cngPrice || args.profile.evPrice) {
+                    userData.pricing = {
+                        cngConversion: args.profile.cngPrice && typeof args.profile.cngPrice === 'string' ? parseFloat(args.profile.cngPrice) : undefined,
+                        evConversion: args.profile.evPrice && typeof args.profile.evPrice === 'string' ? parseFloat(args.profile.evPrice) : undefined,
+                    };
+                }
+                
+                // Set default rating for new providers
+                userData.rating = 4.0;
+                userData.totalReviews = 0;
             } else {
                 userData.fullName = args.profile.name;
             }

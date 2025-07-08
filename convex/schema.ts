@@ -9,7 +9,6 @@ const applicationTables = {
         // For users: fullName, for providers: companyName
         fullName: v.optional(v.string()), // Vehicle owners
         companyName: v.optional(v.string()), // Service providers
-        officeAddress: v.optional(v.string()), // Service providers only
         userType: v.union(
             v.literal("user"),
             v.literal("provider"),

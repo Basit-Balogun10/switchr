@@ -19,7 +19,6 @@ import type * as bookings from "../bookings.js";
 import type * as compatibility from "../compatibility.js";
 import type * as documents from "../documents.js";
 import type * as http from "../http.js";
-import type * as providers from "../providers.js";
 import type * as reviews from "../reviews.js";
 import type * as router from "../router.js";
 import type * as sampleData from "../sampleData.js";
@@ -41,7 +40,6 @@ declare const fullApi: ApiFromModules<{
   compatibility: typeof compatibility;
   documents: typeof documents;
   http: typeof http;
-  providers: typeof providers;
   reviews: typeof reviews;
   router: typeof router;
   sampleData: typeof sampleData;

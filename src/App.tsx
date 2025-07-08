@@ -1,11 +1,10 @@
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { api } from "../convex/_generated/api";
 import { AuthForm } from "./components/AuthForm";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Sidebar } from "./components/layout/Sidebar";
 import { useUserRole } from "./hooks/useUserRole";
-import { getDisplayName, getInitials } from "./lib/types";
 import { Toaster } from "sonner";
 import { useState } from "react";
 import { Dashboard } from "./components/Dashboard";
@@ -15,7 +14,6 @@ import { VehicleChecker } from "./components/VehicleChecker";
 import { CostCalculator } from "./components/CostCalculator";
 import { BookingSystem } from "./components/BookingSystem";
 import { LearningHub } from "./components/LearningHub";
-import { ProviderOnboarding } from "./components/ProviderOnboarding";
 import { ProviderDashboard } from "./components/ProviderDashboard";
 import { TrustSafety } from "./components/TrustSafety";
 
@@ -36,10 +34,9 @@ function Content() {
     const userRole = useUserRole();
     const { signOut } = useAuthActions();
     const [showAuthForm, setShowAuthForm] = useState(false);
-    const location = useLocation();
 
-    const handleSignOut = async () => {
-        await signOut();
+    const handleSignOut = () => {
+        void signOut();
     };
 
     if (user === undefined) {
@@ -215,10 +212,6 @@ function Content() {
                                 <Route
                                     path="/checklists"
                                     element={<TrustSafety />}
-                                />
-                                <Route
-                                    path="/provider-onboard"
-                                    element={<ProviderOnboarding />}
                                 />
 
                                 {/* Admin Routes */}

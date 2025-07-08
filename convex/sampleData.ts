@@ -1,5 +1,4 @@
 import { mutation } from "./_generated/server";
-import { v } from "convex/values";
 
 export const seedDatabase = mutation({
     args: {},
@@ -1175,6 +1174,7 @@ export const seedDatabase = mutation({
             await ctx.db.insert("stations", {
                 ...station,
                 ownerId: stationOwnerId,
+                verified: station.verified ?? true, // Default to true if not specified
             });
         }
 

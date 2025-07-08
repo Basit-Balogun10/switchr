@@ -17,7 +17,7 @@ export function BookingSystem() {
     notes: "",
   });
 
-  const providers = useQuery(api.providers.list, { verified: true });
+  const providers = useQuery(api.users.listProviders, { verified: true });
   const createBooking = useMutation(api.bookings.create);
   const [isSubmitting, setIsSubmitting] = useState(false);
 

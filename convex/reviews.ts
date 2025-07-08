@@ -2,6 +2,7 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { api } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 
 export const create = mutation({
     args: {
@@ -43,15 +44,17 @@ export const create = mutation({
         // Update the target's rating
         if (args.targetType === "provider") {
             // Get current provider to calculate new rating
-            const provider = await ctx.db.get(args.targetId as any);
-            if (provider) {
-                const newTotalReviews = provider.totalReviews + 1;
+            const provider = await ctx.db.get(args.targetId as Id<"users">);
+            if (provider && "userType" in provider && provider.userType === "provider") {
+                const currentTotalReviews = provider.totalReviews || 0;
+                const currentRating = provider.rating || 0;
+                const newTotalReviews = currentTotalReviews + 1;
                 const newRating =
-                    ((provider.rating * provider.totalReviews) + args.rating) /
+                    ((currentRating * currentTotalReviews) + args.rating) /
                     newTotalReviews;
 
                 await ctx.runMutation(api.users.updateRating, {
-                    providerId: args.targetId as any,
+                    providerId: args.targetId as Id<"users">,
                     newRating: newRating,
                     newTotalReviews: newTotalReviews,
                 });
