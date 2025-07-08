@@ -27,45 +27,41 @@ const applicationTables = {
                 language: v.string(),
             })
         ),
+        // Provider-specific fields (only for userType: "provider")
+        description: v.optional(v.string()),
+        location: v.optional(
+            v.object({
+                address: v.string(),
+                city: v.string(),
+                state: v.string(),
+                coordinates: v.object({
+                    lat: v.number(),
+                    lng: v.number(),
+                }),
+            })
+        ),
+        services: v.optional(v.array(v.string())), // ["CNG", "EV", "Hybrid"]
+        certifications: v.optional(v.array(v.string())),
+        pricing: v.optional(
+            v.object({
+                cngConversion: v.optional(v.number()),
+                evConversion: v.optional(v.number()),
+            })
+        ),
+        images: v.optional(v.array(v.id("_storage"))),
+        rating: v.optional(v.number()),
+        totalReviews: v.optional(v.number()),
     })
         .index("by_email", ["email"])
         .index("by_userType", ["userType"])
-        .index("by_verified", ["isVerified"]),
-
-    // Vehicle conversion providers
-    providers: defineTable({
-        name: v.string(),
-        description: v.string(),
-        location: v.object({
-            address: v.string(),
-            city: v.string(),
-            state: v.string(),
-            coordinates: v.object({
-                lat: v.number(),
-                lng: v.number(),
-            }),
-        }),
-        services: v.array(v.string()), // ["CNG", "EV", "Hybrid"]
-        certifications: v.array(v.string()),
-        pricing: v.object({
-            cngConversion: v.optional(v.number()),
-            evConversion: v.optional(v.number()),
-        }),
-        images: v.array(v.id("_storage")),
-        verified: v.boolean(),
-        rating: v.number(),
-        totalReviews: v.number(),
-        ownerId: v.id("users"),
-    })
+        .index("by_verified", ["isVerified"])
         .index("by_location", ["location.city", "location.state"])
-        .index("by_verified", ["verified"])
-        .index("by_rating", ["rating"])
-        .index("by_owner", ["ownerId"]),
+        .index("by_rating", ["rating"]),
 
     // Conversion bookings
     bookings: defineTable({
         userId: v.id("users"),
-        providerId: v.id("providers"),
+        providerId: v.id("users"), // Now references users table
         vehicleInfo: v.object({
             make: v.string(),
             model: v.string(),

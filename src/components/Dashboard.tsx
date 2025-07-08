@@ -4,7 +4,7 @@ import { api } from "../../convex/_generated/api";
 export function Dashboard() {
     const user = useQuery(api.auth.loggedInUser);
     const bookings = useQuery(api.bookings.getUserBookings);
-    const providers = useQuery(api.providers.list, { verified: true });
+    const providers = useQuery(api.users.listProviders, { verified: true });
     const stations = useQuery(api.stations.list, { status: "operational" });
     const seedDatabase = useMutation(api.sampleData.seedDatabase);
 

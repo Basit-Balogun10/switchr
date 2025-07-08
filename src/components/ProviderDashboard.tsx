@@ -4,13 +4,9 @@ import { useState } from "react";
 
 export function ProviderDashboard() {
     const user = useQuery(api.auth.getCurrentUser);
-    const providers = useQuery(api.providers.list, { verified: true });
-    const userProvider = providers?.find((p) => p.ownerId === user?._id);
-    const bookings = useQuery(
-        api.bookings.getProviderBookings,
-        userProvider ? { providerId: userProvider._id } : "skip"
-    );
-    const updateBookingStatus = useMutation(api.bookings.updateStatus);
+    const currentProvider = useQuery(api.users.getCurrentProvider);
+    const bookings = useQuery(api.bookings.getProviderBookings);
+    const updateProfile = useMutation(api.users.updateProfile);
 
     const [selectedBooking, setSelectedBooking] = useState<any>(null);
 
@@ -22,7 +18,7 @@ export function ProviderDashboard() {
         );
     }
 
-    if (!userProvider) {
+    if (!currentProvider) {
         return (
             <div className="text-center py-12">
                 <h2 className="text-2xl font-semibold text-white mb-4">
@@ -51,7 +47,7 @@ export function ProviderDashboard() {
                 bookings?.filter((b) => b.status === "completed").length || 0,
             icon: "✅",
         },
-        { label: "Rating", value: userProvider.rating.toFixed(1), icon: "⭐" },
+        { label: "Rating", value: currentProvider.rating.toFixed(1), icon: "⭐" },
     ];
 
     return (
@@ -60,7 +56,7 @@ export function ProviderDashboard() {
                 <h1 className="text-4xl font-bold text-white mb-2">
                     Provider Dashboard
                 </h1>
-                <p className="text-white/70">{userProvider.name}</p>
+                <p className="text-white/70">{currentProvider.name}</p>
             </div>
 
             {/* Stats Grid */}
@@ -197,7 +193,7 @@ export function ProviderDashboard() {
                                     <button
                                         key={status}
                                         onClick={() => {
-                                            updateBookingStatus({
+                                            updateProfile({
                                                 bookingId: selectedBooking._id,
                                                 status,
                                             });

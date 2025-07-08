@@ -50,7 +50,7 @@ export const create = mutation({
                     ((provider.rating * provider.totalReviews) + args.rating) /
                     newTotalReviews;
 
-                await ctx.runMutation(api.providers.updateRating, {
+                await ctx.runMutation(api.users.updateRating, {
                     providerId: args.targetId as any,
                     newRating: newRating,
                     newTotalReviews: newTotalReviews,

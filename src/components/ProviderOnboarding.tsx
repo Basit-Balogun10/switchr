@@ -3,7 +3,6 @@ import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
 interface ProviderFormData {
-    name: string;
     description: string;
     address: string;
     city: string;
@@ -29,7 +28,7 @@ const certificationOptions = [
 ];
 
 export function ProviderOnboarding() {
-    const createProvider = useMutation(api.providers.create);
+    const updateProfile = useMutation(api.users.updateProfile);
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const addressInputRef = useRef<HTMLInputElement>(null);
@@ -38,7 +37,6 @@ export function ProviderOnboarding() {
     );
 
     const [formData, setFormData] = useState<ProviderFormData>({
-        name: "",
         description: "",
         address: "",
         city: "",
@@ -135,8 +133,7 @@ export function ProviderOnboarding() {
             if (formData.evPrice)
                 pricing.evConversion = parseInt(formData.evPrice);
 
-            await createProvider({
-                name: formData.name,
+            await updateProfile({
                 description: formData.description,
                 location: {
                     address: formData.address,
@@ -151,7 +148,7 @@ export function ProviderOnboarding() {
 
             setSuccess(true);
         } catch (error) {
-            console.error("Failed to create provider:", error);
+            console.error("Failed to update provider profile:", error);
         } finally {
             setIsLoading(false);
         }

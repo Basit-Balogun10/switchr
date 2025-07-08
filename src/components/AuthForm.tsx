@@ -14,6 +14,16 @@ interface FormData {
     companyName: string; // For providers
     officeAddress: string; // For providers
     agreeToTerms: boolean;
+    // Provider onboarding fields
+    description: string;
+    address: string;
+    city: string;
+    state: string;
+    coordinates: { lat: number; lng: number } | null;
+    services: string[];
+    certifications: string[];
+    cngPrice: string;
+    evPrice: string;
 }
 
 export function AuthForm({ onClose }: AuthFormProps) {
@@ -31,6 +41,15 @@ export function AuthForm({ onClose }: AuthFormProps) {
         companyName: "",
         officeAddress: "",
         agreeToTerms: false,
+        description: "",
+        address: "",
+        city: "",
+        state: "",
+        coordinates: null,
+        services: [],
+        certifications: [],
+        cngPrice: "",
+        evPrice: "",
     });
 
     const validateForm = (): string | null => {
